@@ -1671,6 +1671,67 @@ RLAPI void DetachAudioStreamProcessor(AudioStream stream, AudioCallback processo
 RLAPI void AttachAudioMixedProcessor(AudioCallback processor); // Attach audio stream processor to the entire audio pipeline, receives the samples as 'float'
 RLAPI void DetachAudioMixedProcessor(AudioCallback processor); // Detach audio stream processor from the entire audio pipeline
 
+// CUSTOM
+
+#define VY_GL_ACTIVE_UNIFORMS GL_ACTIVE_UNIFORMS
+#define VY_GL_ACTIVE_ATTRIBUTES GL_ACTIVE_ATTRIBUTES
+
+    typedef struct VyModelMeta {
+        unsigned char* name;
+        char drawingDisabled;
+    } VyModelMeta;
+
+    typedef struct VyMesh {
+        Mesh mesh;
+        Vector3 translation;
+        Vector4 rotation;
+        Vector3 scale;
+    } VyMesh;
+
+    typedef struct VyModel {
+        Model model;
+        int metaCount;
+        VyModelMeta *meta;
+        VyMesh *meshes;
+    } VyModel;
+
+// For supporting rotations from GLTF files.
+    typedef struct VyCamera {
+        Camera camera;
+        Quaternion rotation;
+    } VyCamera;
+
+    typedef struct VyShaderParameter {
+        char* name;
+        int type;
+        int size;
+        int loc;
+    } VyShaderParameter;
+
+    typedef struct VyShaderParameters {
+        int uniformsCount;
+        VyShaderParameter uniforms[256];
+
+        int attributesCount;
+        VyShaderParameter attributes[256];
+
+        int shaderId;
+    } VyShaderParameters;
+
+    RLAPI void VyDrawModel(VyModel vyModel, Vector3 position, float scale, Color tint);
+    RLAPI void VyDrawModelEx(VyModel vyModel, Vector3 position, Vector3 rotationAxis, float rotationAngle, Vector3 scale, Color tint);
+    RLAPI void VyDrawModelExQuat(VyModel vyModel, Vector3 position, Quaternion quaternion, Vector3 scale, Color tint);
+    RLAPI void VyBeginMode3D(VyCamera camera);
+    RLAPI float VyQuaternionToAxisAngle(Quaternion q);
+    RLAPI Vector3 VyQuaternionToAxisVector(Quaternion q);
+
+    RLAPI Ray VyGetScreenToWorldRay(Vector2 position, VyCamera camera);
+    RLAPI Ray VyGetScreenToWorldRayEx(Vector2 position, VyCamera camera, int width, int height);
+
+    RLAPI VyShaderParameters VyGlGetActiveParameters(int id);
+    RLAPI int VyGlGetActiveUniformsCount(int id);
+    RLAPI int VyGlGetActiveAttributesCount(int id);
+
 #if defined(__cplusplus)
 }
 #endif
