@@ -59,7 +59,7 @@
 // Function specifiers definition
 #if defined(RAYMATH_IMPLEMENTATION)
     #if defined(_WIN32) && defined(BUILD_LIBTYPE_SHARED)
-        #define RMAPI __declspec(dllexport) extern inline // We are building raylib as a Win32 shared library (.dll)
+        #define RMAPI extern __declspec(dllexport) // We are building raylib as a Win32 shared library (.dll)
     #elif defined(BUILD_LIBTYPE_SHARED)
         #define RMAPI __attribute__((visibility("default"))) // We are building raylib as a Unix shared library (.so/.dylib)
     #elif defined(_WIN32) && defined(USE_LIBTYPE_SHARED)
@@ -2225,9 +2225,9 @@ RMAPI Quaternion QuaternionCubicHermiteSpline(Quaternion q1, Quaternion outTange
     float t2 = t * t;
     float t3 = t2 * t;
     float h00 = 2 * t3 - 3 * t2 + 1;
-    float h10 = t3 - 2 * t2 + t;    
-    float h01 = -2 * t3 + 3 * t2;   
-    float h11 = t3 - t2;            
+    float h10 = t3 - 2 * t2 + t;
+    float h01 = -2 * t3 + 3 * t2;
+    float h11 = t3 - t2;
 
     Quaternion p0 = QuaternionScale(q1, h00);
     Quaternion m0 = QuaternionScale(outTangent1, h10);
