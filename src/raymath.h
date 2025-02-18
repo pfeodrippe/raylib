@@ -2532,60 +2532,44 @@ RMAPI int QuaternionEquals(Quaternion p, Quaternion q)
 // Decompose a transformation matrix into its rotational, translational and scaling components
 RMAPI void MatrixDecompose(Matrix mat, Vector3 *translation, Quaternion *rotation, Vector3 *scale)
 {
-    // Extract translation.
+    // Extract translation (last column of the column-major matrix)
     translation->x = mat.m12;
     translation->y = mat.m13;
     translation->z = mat.m14;
 
-    // Extract upper-left for determinant computation
-    const float a = mat.m0;
-    const float b = mat.m4;
-    const float c = mat.m8;
-    const float d = mat.m1;
-    const float e = mat.m5;
-    const float f = mat.m9;
-    const float g = mat.m2;
-    const float h = mat.m6;
-    const float i = mat.m10;
-    const float A = e*i - f*h;
-    const float B = f*g - d*i;
-    const float C = d*h - e*g;
+    // Extract scale factors (length of each column vector)
+    float scaleX = Vector3Length((Vector3){ mat.m0, mat.m1, mat.m2 });
+    float scaleY = Vector3Length((Vector3){ mat.m4, mat.m5, mat.m6 });
+    float scaleZ = Vector3Length((Vector3){ mat.m8, mat.m9, mat.m10 });
 
-    // Extract scale
-    const float det = a*A + b*B + c*C;
-    Vector3 abc = { a, b, c };
-    Vector3 def = { d, e, f };
-    Vector3 ghi = { g, h, i };
+    // Detect reflection (negative determinant = mirrored transformation)
+    float det = (mat.m0 * (mat.m5 * mat.m10 - mat.m6 * mat.m9)
+               - mat.m4 * (mat.m1 * mat.m10 - mat.m2 * mat.m9)
+               + mat.m8 * (mat.m1 * mat.m6 - mat.m2 * mat.m5));
 
-    float scalex = Vector3Length(abc);
-    float scaley = Vector3Length(def);
-    float scalez = Vector3Length(ghi);
-    Vector3 s = { scalex, scaley, scalez };
+    if (det < 0) scaleZ = -scaleZ;  // Flip only one axis if mirrored
 
-    if (det < 0) s = Vector3Negate(s);
+    *scale = (Vector3){ scaleX, scaleY, scaleZ };
 
-    *scale = s;
-
-    // Remove scale from the matrix if it is not close to zero
-    Matrix clone = mat;
-    if (!FloatEquals(det, 0))
+    // Normalize the rotation matrix (remove scale)
+    if (!FloatEquals(scaleX, 0) && !FloatEquals(scaleY, 0) && !FloatEquals(scaleZ, 0))
     {
-        clone.m0 /= s.x;
-        clone.m4 /= s.x;
-        clone.m8 /= s.x;
-        clone.m1 /= s.y;
-        clone.m5 /= s.y;
-        clone.m9 /= s.y;
-        clone.m2 /= s.z;
-        clone.m6 /= s.z;
-        clone.m10 /= s.z;
+        Vector3 xAxis = { mat.m0 / scaleX, mat.m1 / scaleX, mat.m2 / scaleX };
+        Vector3 yAxis = { mat.m4 / scaleY, mat.m5 / scaleY, mat.m6 / scaleY };
+        Vector3 zAxis = { mat.m8 / scaleZ, mat.m9 / scaleZ, mat.m10 / scaleZ };
 
-        // Extract rotation
-        *rotation = QuaternionFromMatrix(clone);
+        Matrix rotationMatrix = {
+            xAxis.x, yAxis.x, zAxis.x, 0.0f,
+            xAxis.y, yAxis.y, zAxis.y, 0.0f,
+            xAxis.z, yAxis.z, zAxis.z, 0.0f,
+            0.0f,    0.0f,    0.0f,    1.0f
+        };
+
+        *rotation = QuaternionFromMatrix(rotationMatrix);
     }
     else
     {
-        // Set to identity if close to zero
+        // Degenerate case: Set rotation to identity if scale is zero
         *rotation = QuaternionIdentity();
     }
 }
