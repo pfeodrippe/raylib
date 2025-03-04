@@ -452,7 +452,7 @@ endif
 # Define include paths for required headers: INCLUDE_PATHS
 # NOTE: Several external required libraries (stb and others)
 #------------------------------------------------------------------------------------------------
-INCLUDE_PATHS = -I. 
+INCLUDE_PATHS = -I.
 
 # Define additional directories containing required header files
 ifeq ($(PLATFORM),PLATFORM_DESKTOP)
@@ -620,7 +620,7 @@ OBJS = rcore.o \
        rshapes.o \
        rtextures.o \
        rtext.o \
-       utils.o 
+       utils.o
 
 
 ifeq ($(PLATFORM),PLATFORM_DESKTOP)
@@ -717,7 +717,7 @@ endif
 rcore.o : platforms/*.c
 
 # Compile core module
-rcore.o : rcore.c raylib.h rlgl.h utils.h raymath.h rcamera.h rgestures.h
+rcore.o : rcore.c raylib.h rlgl.h utils.h raymath.h raygui.h rcamera.h rgestures.h
 	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS)
 
 # Compile rglfw module
@@ -805,6 +805,7 @@ ifeq ($(ROOT),root)
         # Copying raylib development files to $(RAYLIB_H_INSTALL_PATH).
 		cp --update raylib.h $(RAYLIB_H_INSTALL_PATH)/raylib.h
 		cp --update raymath.h $(RAYLIB_H_INSTALL_PATH)/raymath.h
+                cp --update raygui.h $(RAYLIB_H_INSTALL_PATH)/raygui.h
 		cp --update rlgl.h $(RAYLIB_H_INSTALL_PATH)/rlgl.h
 		@echo "raylib development files installed/updated!"
     else
@@ -832,6 +833,7 @@ ifeq ($(ROOT),root)
         endif
 		rm --force --interactive --verbose $(RAYLIB_H_INSTALL_PATH)/raylib.h
 		rm --force --interactive --verbose $(RAYLIB_H_INSTALL_PATH)/raymath.h
+	        rm --force --interactive --verbose $(RAYLIB_H_INSTALL_PATH)/raygui.h
 		rm --force --interactive --verbose $(RAYLIB_H_INSTALL_PATH)/rlgl.h
 		@echo "raylib development files removed!"
     else

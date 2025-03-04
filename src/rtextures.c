@@ -4797,17 +4797,17 @@ Color ColorAlphaBlend(Color dst, Color src, Color tint)
 }
 
 // Get a Color struct from hexadecimal value
-Color GetColor(unsigned int hexValue)
-{
-    Color color;
+/* Color GetColor(unsigned int hexValue) */
+/* { */
+/*     Color color; */
 
-    color.r = (unsigned char)(hexValue >> 24) & 0xFF;
-    color.g = (unsigned char)(hexValue >> 16) & 0xFF;
-    color.b = (unsigned char)(hexValue >> 8) & 0xFF;
-    color.a = (unsigned char)hexValue & 0xFF;
+/*     color.r = (unsigned char)(hexValue >> 24) & 0xFF; */
+/*     color.g = (unsigned char)(hexValue >> 16) & 0xFF; */
+/*     color.b = (unsigned char)(hexValue >> 8) & 0xFF; */
+/*     color.a = (unsigned char)hexValue & 0xFF; */
 
-    return color;
-}
+/*     return color; */
+/* } */
 
 // Get color from a pixel from certain format
 Color GetPixelColor(void *srcPtr, int format)
